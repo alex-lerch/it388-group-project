@@ -92,7 +92,7 @@ void MPIMergeSortLong::mergesort(std::vector<long>& arr)
     }
 }
 
-std::vector<long> MPIMergeSortLong::sort(std::vector<long> arr)
+std::vector<long> MPIMergeSortLong::sort(std::vector<long>& arr)
 {
     mergesort(arr);
     return arr;

@@ -92,7 +92,7 @@ void OMPMergeSortInt::mergesort(std::vector<int>& arr)
         }
     }
 
-std::vector<int> OMPMergeSortInt::sort(std::vector<int> arr)
+std::vector<int> OMPMergeSortInt::sort(std::vector<int>& arr)
 {
     mergesort(arr);
     return arr;

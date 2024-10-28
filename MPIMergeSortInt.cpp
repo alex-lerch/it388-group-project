@@ -92,7 +92,7 @@ void MPIMergeSortInt::mergesort(std::vector<int>& arr)
     }
 }
 
-std::vector<int> MPIMergeSortInt::sort(std::vector<int> arr)
+std::vector<int> MPIMergeSortInt::sort(std::vector<int>& arr)
 {
     mergesort(arr);
     return arr;

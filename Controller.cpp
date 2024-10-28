@@ -27,17 +27,21 @@ int main(int argc, char** argv)
         exit(0);
     }
     nThreads = atoi((char*)argv[1]);
-    const char* sortType = (char*)argv[2];
-    const char* dataType = (char*)argv[3];
+    string sortType = (char*)argv[2];
+    cout << "sortType is " << sortType << "." << endl;
+    string dataType = (char*)argv[3];
+    cout << "dataType is " << dataType << "."  << endl;
     const char* file = (char*)argv[4];
     double start =0;
     double elapsed =0;
 
 
-    if(strcmp(sortType,"MPI")==0)
+    if(sortType.compare("MPI")==0)
     {
-        if(strcmp(dataType,"int"))
+        cout << "Sorting using MPI" << endl;
+        if(dataType.compare("int")==0)
         {
+            cout << "Sorting using ints" << endl;
             //create objects
             MPIMergeSortInt sorter;
             FileReader reader;
@@ -47,6 +51,7 @@ int main(int argc, char** argv)
             //call sort
             start = omp_get_wtime();
             sorter.sort(arr);
+            cout << "index 0 is" << arr[0] << endl;
             elapsed = omp_get_wtime() - start;
             //write to file
             writer.writeFileInt(arr, (char*)"output.txt");
@@ -56,8 +61,9 @@ int main(int argc, char** argv)
             writer.~FileWriter();
             cout << "Sorting took " << elapsed << " seconds" <<endl;
         }
-        if(strcmp(dataType,"long"))
+        if(dataType.compare("long")==0)
         {
+            cout << "Sorting using longs" << endl;
             //create objects
             MPIMergeSortLong sorter;
             FileReader reader;
@@ -77,9 +83,10 @@ int main(int argc, char** argv)
             cout << "Sorting took " << elapsed << " seconds" <<endl;
         }
     }
-    else if(strcmp(sortType,"OMP")==0)
+    else if(sortType.compare("OMP")==0)
     {
-        if(strcmp(dataType,"int"))
+        cout << "Sorting using OMP" << endl;
+        if(dataType.compare("int")==0)
         {
             //create objects
             OMPMergeSortInt sorter;
@@ -98,7 +105,7 @@ int main(int argc, char** argv)
             reader.~FileReader();
             writer.~FileWriter();
         }
-        if(strcmp(dataType,"long"))
+        if(dataType.compare("long")==0)
         {
             //create objects
             OMPMergeSortLong sorter;

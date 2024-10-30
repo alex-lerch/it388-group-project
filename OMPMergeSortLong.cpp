@@ -40,7 +40,7 @@ void OMPMergeSortLong::merge(std::vector<long>& arr, std::vector<long>& tempVect
 
 }
 
-void OMPMergeSortLong::mergesort(std::vector<long>& arr)
+void OMPMergeSortLong::mergesort(std::vector<long>& arr, int nproc)
 {
     // variables used
     int sizeOfSortedArrays; // the size of the logical arrays that are already sorted
@@ -92,8 +92,8 @@ void OMPMergeSortLong::mergesort(std::vector<long>& arr)
     }
 }
 
-std::vector<long> OMPMergeSortLong::sort(std::vector<long>& arr)
+std::vector<long> OMPMergeSortLong::sort(std::vector<long>& arr, int nproc)
 {
-    mergesort(arr);
+    mergesort(arr, nproc);
     return arr;
 }

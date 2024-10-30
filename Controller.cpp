@@ -50,7 +50,7 @@ int main(int argc, char** argv)
             reader.readFileInt(arr, (char*)file);
             //call sort
             start = omp_get_wtime();
-            sorter.sort(arr);
+            sorter.sort(arr,nThreads);
             cout << "index 0 is" << arr[0] << endl;
             elapsed = omp_get_wtime() - start;
             //write to file
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
             reader.readFileLong(arr, (char*)file);
             //call sort
             start = omp_get_wtime();
-            sorter.sort(arr);
+            sorter.sort(arr,nThreads);
             elapsed = omp_get_wtime() - start;
             //write to file
             writer.writeFileLong(arr, (char*)"output.txt");
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
             reader.readFileInt(arr, (char*)file);
             //call sort
             start = omp_get_wtime();
-            sorter.sort(arr);
+            sorter.sort(arr,nThreads);
             elapsed = omp_get_wtime() - start;
             //write to file
             writer.writeFileInt(arr, (char*)"output.txt");
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
             reader.readFileLong(arr, (char*)file);
             //call sort
             start = omp_get_wtime();
-            sorter.sort(arr);
+            sorter.sort(arr,nThreads);
             elapsed = omp_get_wtime() - start;
             //write to file
             writer.writeFileLong(arr, (char*)"output.txt");

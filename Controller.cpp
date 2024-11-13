@@ -58,7 +58,7 @@ int main(int argc, char** argv)
                 start = MPI_Wtime();
                 sorter.sort(arr,nThreads);
                 elapsed = MPI_Wtime() - start;
-                cout << "Sorting took " << elapsed << " seconds" <<endl;
+                cout << "Sorting took " << elapsed * 1000<< " milliseconds" <<endl;
                 //write to file
                 writer.writeFileInt(arr, (char*)"output.txt");
                 //deconstuct objects
@@ -85,7 +85,7 @@ int main(int argc, char** argv)
                 sorter.~MPIMergeSortLong();
                 reader.~FileReader();
                 writer.~FileWriter();
-                cout << "Sorting took " << elapsed << " seconds" <<endl;
+                cout << "Sorting took " << elapsed * 1000<< " milliseconds" <<endl;
             }
         }
         else if(sortType.compare("OMP")==0)
@@ -105,6 +105,7 @@ int main(int argc, char** argv)
                 elapsed = omp_get_wtime() - start;
                 //write to file
                 writer.writeFileInt(arr, (char*)"output.txt");
+                cout << "Sorting using OMP took " << elapsed * 1000<< " milliseconds" <<endl;
                 //deconstuct objects
                 sorter.~OMPMergeSortInt();
                 reader.~FileReader();
@@ -128,7 +129,7 @@ int main(int argc, char** argv)
                 sorter.~OMPMergeSortLong();
                 reader.~FileReader();
                 writer.~FileWriter();
-                cout << "Sorting took " << elapsed << " seconds" <<endl;
+                cout << "Sorting took " << elapsed * 1000 << " seconds" <<endl;
             }
         }
         else

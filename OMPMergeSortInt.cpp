@@ -1,6 +1,7 @@
 #include "MergeSortInt.h"
 #include "OMPMergeSortInt.h"
 #include <vector>
+#include <omp.h>
 
 void OMPMergeSortInt::merge(std::vector<int>& arr, std::vector<int>& tempVector, int leftArrayIndex, int rightArrayIndex, int rightArrayEnd) {
         // variables used
@@ -9,32 +10,49 @@ void OMPMergeSortInt::merge(std::vector<int>& arr, std::vector<int>& tempVector,
         int numElements = rightArrayEnd - leftArrayIndex + 1; // the number of elements to be sorted
 
         // while both logical arrays have items left to merge
-        while (leftArrayIndex <= leftArrayEnd && rightArrayIndex <= rightArrayEnd) {
-            
+        // (leftArrayIndex <= leftArrayEnd && rightArrayIndex <= rightArrayEnd) {
+        #pragma omp parallel for shared(arr, tempVector) firstprivate(rightArrayIndex, leftArrayIndex, tempPosition) lastprivate(rightArrayIndex, leftArrayIndex, tempPosition)
+        for(int i =0; i < numElements; i++){
+        //for(int i =leftArrayIndex; i < leftArrayEnd; i++){    
             // if left is less than or equal to right
-            if (arr[leftArrayIndex] <= arr[rightArrayIndex]) {
-                
-                // add left item and increment
-                tempVector[tempPosition++] = arr[leftArrayIndex++];
-            }
-            else { // right is less than left
+            // if(rightArrayIndex > rightArrayEnd)
+            // {
+            //     break;
+            // }
+            if(leftArrayIndex <= leftArrayEnd && rightArrayIndex <= rightArrayEnd )
+            {
+                if (arr[leftArrayIndex] <= arr[rightArrayIndex]) {
+                    
+                    // add left item and increment
+                    #pragma omp critical
+                    tempVector[tempPosition++] = arr[leftArrayIndex++];
+                }
+                else { // right is less than left
 
-                // add right item and increment
-                tempVector[tempPosition++] = arr[rightArrayIndex++];
+                    // add right item and increment
+                    #pragma omp critical
+                    tempVector[tempPosition++] = arr[rightArrayIndex++];
+                    //i--;//If left array index was not incrimented
+                }
             }
         }
 
         // while there are left over items in the left logical array
-        while (leftArrayIndex <= leftArrayEnd) {
 
+        while (leftArrayIndex <= leftArrayEnd) {
+        // #pragma omp parallel for shared(arr, tempVector) firstprivate(leftArrayIndex, tempPosition) lastprivate(leftArrayIndex, tempPosition)
+        // for(int i = leftArrayIndex; i <= leftArrayEnd; i++){
             // add item and increment
+            //#pragma omp critical
             tempVector[tempPosition++] = arr[leftArrayIndex++];
         }
 
         // while there are left over items in the righ logical array
         while (rightArrayIndex <= rightArrayEnd) {
-
+        // #pragma omp parallel for shared(arr,tempVector) firstprivate(rightArrayIndex, tempPosition) lastprivate(rightArrayIndex, tempPosition)
+        // for(int i=rightArrayIndex; i <= rightArrayEnd; i++){
             // add item and increment
+            //#pragma omp critical
             tempVector[tempPosition++] = arr[rightArrayIndex++];
         }
 
@@ -48,7 +66,7 @@ void OMPMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
         int leftArrayIndex; // the start index for the left logical array to be sorted
         int rightArrayIndex; // start index for the right logical array to be sorted
         int rightArrayEnd; // end index for the right logical array to be sorted
-
+        omp_set_num_threads(nproc);
         // the size of the logical arrays to sort
         sizeOfSortedArrays = 1;
 

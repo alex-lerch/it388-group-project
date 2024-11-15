@@ -1,0 +1,11 @@
+
+merge_sort:1802862 terminated with signal 11 at PC=563a436b3e5f SP=7ffced4ba370.  Backtrace:
+./merge_sort(+0x8e5f)[0x563a436b3e5f]
+/lib/x86_64-linux-gnu/libgomp.so.1(GOMP_parallel+0x46)[0x7fc3774a0a16]
+./merge_sort(+0x8137)[0x563a436b3137]
+./merge_sort(+0x82e1)[0x563a436b32e1]
+./merge_sort(+0x843f)[0x563a436b343f]
+./merge_sort(+0x4138)[0x563a436af138]
+/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7fc37726cd90]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7fc37726ce40]
+./merge_sort(+0x3825)[0x563a436ae825]

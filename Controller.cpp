@@ -7,13 +7,16 @@
 #include "FileWriter.h"
 #include "MergeSortInt.h"
 #include "MergeSortLong.h"
+#include "MergeSortString.h"
 #include "MPIMergeSortInt.h"
 #include "MPIMergeSortLong.h"
 #include "OMPMergeSortInt.h"
 #include "OMPMergeSortLong.h"
+#include "OMPMergeSortString.h"
 #include <iostream>
 #include <omp.h>
 #include <mpi.h>
+
 
 
 using namespace std;
@@ -98,10 +101,13 @@ int main(int argc, char** argv)
                 FileReader reader;
                 FileWriter writer;
                 std::vector<int> arr;
+                
                 reader.readFileInt(arr, (char*)file);
+                cout << "current size is :  " << arr.size() << endl;
                 //call sort
                 start = omp_get_wtime();
                 sorter.sort(arr,nThreads);
+                cout << "current size after sort :  " << arr.size() << endl;
                 elapsed = omp_get_wtime() - start;
                 //write to file
                 writer.writeFileInt(arr, (char*)"output.txt");
@@ -129,7 +135,27 @@ int main(int argc, char** argv)
                 sorter.~OMPMergeSortLong();
                 reader.~FileReader();
                 writer.~FileWriter();
-                cout << "Sorting took " << elapsed * 1000 << " seconds" <<endl;
+                cout << "Sorting took " << elapsed * 1000 << " milliseconds" <<endl;
+            }
+            if(dataType.compare("string")==0)
+            {
+                //create objects
+                OMPMergeSortString sorter;
+                FileReader reader;
+                FileWriter writer;
+                std::vector<std::string> arr;
+                reader.readFileString(arr, (char*)file);
+                //call sort
+                start = omp_get_wtime();
+                sorter.sort(arr,nThreads);
+                elapsed = omp_get_wtime() - start;
+                //write to file
+                writer.writeFileString(arr, (char*)"output.txt");
+                //deconstuct objects
+                sorter.~OMPMergeSortString();
+                reader.~FileReader();
+                writer.~FileWriter();
+                cout << "Sorting took " << elapsed * 1000 << " milliseconds" <<endl;
             }
         }
         else

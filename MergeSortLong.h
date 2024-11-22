@@ -7,4 +7,8 @@ class MergeSortLong
         virtual std::vector<long> sort(std::vector<long>& arr, int nproc)=0;
         virtual void mergesort(std::vector<long>& arr, int nproc)=0;
         virtual void merge(std::vector<long>& arr, std::vector<long>& tempVector, int leftArrayIndex, int rightArrayIndex, int rightArrayEnd)=0;
+
+        // for mpi
+        virtual std::vector<long> sort(std::vector<long>& arr, int nproc, int rank)=0;
+        virtual void mergesort(std::vector<long>& arr, int nproc, int rank)=0;
 };

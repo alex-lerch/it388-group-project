@@ -1,5 +1,6 @@
 #include "MergeSortLong.h"
 #include "MPIMergeSortLong.h"
+#include <iostream>
 #include <vector>
 
 void MPIMergeSortLong::merge(std::vector<long>& arr, std::vector<long>& tempVector, int leftArrayIndex, int rightArrayIndex, int rightArrayEnd) {
@@ -40,8 +41,11 @@ void MPIMergeSortLong::merge(std::vector<long>& arr, std::vector<long>& tempVect
 
 }
 
-void MPIMergeSortLong::mergesort(std::vector<long>& arr, int nproc)
+void MPIMergeSortLong::mergesort(std::vector<long>& arr, int nproc, int rank)
 {
+
+    std::cout << "hello from rank " << rank << "\n";
+
     // variables used
     int sizeOfSortedArrays; // the size of the logical arrays that are already sorted
     std::vector<long> tempVector(arr.size()); // temporary vector used to help sort the logical arrays
@@ -92,8 +96,8 @@ void MPIMergeSortLong::mergesort(std::vector<long>& arr, int nproc)
     }
 }
 
-std::vector<long> MPIMergeSortLong::sort(std::vector<long>& arr, int nproc)
+std::vector<long> MPIMergeSortLong::sort(std::vector<long>& arr, int nproc, int rank)
 {
-    mergesort(arr, nproc);
+    mergesort(arr, nproc, rank);
     return arr;
 }

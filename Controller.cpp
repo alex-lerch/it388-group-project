@@ -33,9 +33,8 @@ int main(int argc, char** argv)
     MPI_Comm_size(comm, &nThreads);
     MPI_Comm_rank(comm, &rank);
     
-    if(rank ==0)
-    {
-        if(argc < 4)
+    
+    if(argc < 4)
         {
             exit(0);
         }
@@ -48,7 +47,11 @@ int main(int argc, char** argv)
 
         if(sortType.compare("MPI")==0)
         {
-            cout << "Sorting using MPI" << endl;
+            // manager prints message
+            if (rank == 0) {
+                cout << "Sorting using MPI" << endl;
+            }
+            
             if(dataType.compare("int")==0)
             {
                 //create objects
@@ -71,24 +74,36 @@ int main(int argc, char** argv)
             }
             if(dataType.compare("long")==0)
             {
-                cout << "Sorting using longs" << endl;
-                //create objects
-                MPIMergeSortLong sorter;
+                // create objects
+                std::vector<long> arr;
                 FileReader reader;
                 FileWriter writer;
-                std::vector<long> arr;
-                reader.readFileLong(arr, (char*)file);
-                //call sort
-                start = omp_get_wtime();
-                sorter.sort(arr,nThreads);
-                elapsed = omp_get_wtime() - start;
-                //write to file
-                writer.writeFileLong(arr, (char*)"output.txt");
-                //deconstuct objects
-                sorter.~MPIMergeSortLong();
-                reader.~FileReader();
-                writer.~FileWriter();
-                cout << "Sorting took " << elapsed * 1000<< " milliseconds" <<endl;
+                MPIMergeSortLong sorter;
+
+                // manager rank prints message and reads file into arr and starts time
+                if (rank == 0) {
+                    cout << "Sorting using longs" << endl;
+                    
+                    reader.readFileLong(arr, (char*)file);
+
+                    start = omp_get_wtime();
+                }
+
+                // all processes call the sort function
+                sorter.sort(arr,nThreads, rank);
+
+                // manager rank calculates elapsed time and write results to the file
+                if (rank == 0) {
+                    elapsed = omp_get_wtime() - start;
+                    //write to file
+                    writer.writeFileLong(arr, (char*)"output.txt");
+                    //deconstuct objects
+                    sorter.~MPIMergeSortLong();
+                    reader.~FileReader();
+                    writer.~FileWriter();
+                    cout << "Sorting took " << elapsed * 1000<< " milliseconds" <<endl;
+                }
+                
             }
         }
         else if(sortType.compare("OMP")==0)
@@ -160,7 +175,8 @@ int main(int argc, char** argv)
         }
         else
             cout << "Invalid parallelism choice. Options are MPI or OMP" << endl;
-    }
+
+
     MPI_Finalize();
 
 }

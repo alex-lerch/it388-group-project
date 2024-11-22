@@ -9,6 +9,4 @@ class OMPMergeSortLong: public MergeSortLong
         void mergesort(std::vector<long>& arr,int nproc);
         void merge(std::vector<long>& arr, std::vector<long>& tempVector, int leftArrayIndex, int rightArrayIndex, int rightArrayEnd);
 
-        virtual std::vector<long> sort(std::vector<long>& arr, int nproc, int rank){};
-        virtual void mergesort(std::vector<long>& arr, int nproc, int rank){};
 };

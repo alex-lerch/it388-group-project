@@ -64,7 +64,7 @@ void OMPMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
 
             // check for real group
             #pragma parallel omp for firstprivate(rightArrayEnd, rightArrayIndex, leftArrayEnd, leftArrayIndex) lastprivate(rightArrayEnd, rightArrayIndex, leftArrayEnd, leftArrayIndex) if(arr.size()>1000)
-            for( int i = 0; i < arr.size() / sizeOfSortedArrays; i++){    
+            for( int i = 0; i < arr.size(); i++){    
                 if(leftArrayIndex < (arr.size() - sizeOfSortedArrays))
                 {
                     // calculate the start index for the right array

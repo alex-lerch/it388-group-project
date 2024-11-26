@@ -1,6 +1,8 @@
 #include "MergeSortInt.h"
 #include "MPIMergeSortInt.h"
 #include <vector>
+#include <iterator>
+#include <iostream>
 
 void MPIMergeSortInt::merge(std::vector<int>& arr, std::vector<int>& tempVector, int leftArrayIndex, int rightArrayIndex, int rightArrayEnd) {
     // variables used
@@ -44,51 +46,54 @@ void MPIMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
 {
     // variables used
     int sizeOfSortedArrays; // the size of the logical arrays that are already sorted
-    std::vector<int> tempVector(arr.size()); // temporary vector used to help sort the logical arrays
-    int leftArrayIndex; // the start index for the left logical array to be sorted
-    int rightArrayIndex; // start index for the right logical array to be sorted
-    int rightArrayEnd; // end index for the right logical array to be sorted
+    
+    // int leftArrayIndex; // the start index for the left logical array to be sorted
+    // int rightArrayIndex; // start index for the right logical array to be sorted
+    // int rightArrayEnd; // end index for the right logical array to be sorted
 
-    // the size of the logical arrays to sort
-    sizeOfSortedArrays = 1;
+
 
     // while we still have logical arrays to sort
-    while (sizeOfSortedArrays < arr.size()) {
+    int nThreads;
+    int rank;
+    int n;//size of array
+    int* array;//use as array instead of vector
+    MPI_Comm_size(comm, &nThreads);
+    MPI_Comm_rank(comm, &rank);
+    //int sorted[arr.size()];
 
-        // set left index to 0
-        leftArrayIndex = 0;
-
-        // check for real group
-        while ( leftArrayIndex < (arr.size() - sizeOfSortedArrays) ) {
-            
-            // calculate the start index for the right array
-            rightArrayIndex = leftArrayIndex + sizeOfSortedArrays;
-
-            // calculate rightArrayEnd
-            if ( arr.size() - 1 < (rightArrayIndex + (sizeOfSortedArrays - 1)) ) {
-                rightArrayEnd = arr.size() - 1;
-            }
-            else {
-                rightArrayEnd = rightArrayIndex + (sizeOfSortedArrays - 1);
-            }
-
-            // merge the two logical arrays
-            merge(arr, tempVector, leftArrayIndex, rightArrayIndex, rightArrayEnd);
-
-            // move start index for the left array to the next unsorted logical array
-            leftArrayIndex += 2 * sizeOfSortedArrays;
+    // the size of the logical arrays to sort
+    if(rank ==0)
+    {
+        sizeOfSortedArrays = 1;
+        n = arr.size();//size of array
+        array = &arr[0];//use as array instead of vector
+    }
+    printf("got to loop \n");
+    MPI_Bcast(&sizeOfSortedArrays, 1, MPI_INT, 0, comm);//send size to all processes
+    MPI_Bcast(&n, 1, MPI_INT, 0, comm);//send n to all processes
+    int work = n/nThreads;//work for each thread to do 
+    int local[work];//local array for each thread
+    while(sizeOfSortedArrays< n)
+    {
+        int local_work = sizeOfSortedArrays*2;
+        MPI_Scatter(array,work, MPI_INT, &local, work, MPI_INT,0, comm);//Scatter equal work to processes
+        std::cout << "Scattered\n" << std::endl;
+        std::vector<int> temp(local, local+local_work);//convert local to vector to use merge
+        for(int i =0; i < work; i = i + local_work)// loop for every 2 logical arrays to merge
+        {
+            std::vector<int> tempVector(work); // temporary vector used to help sort the logical arrays
+            merge(temp, tempVector,i,i+sizeOfSortedArrays, i+local_work);//merges logical arrays
         }
+        printf("Did merges\n");
 
-        // copy what's left over
-        for (int i = leftArrayIndex; i < arr.size(); i++) {
-            tempVector[i] = arr[i];
+        MPI_Gather(&local,work,MPI_INT,array,work, MPI_INT,0,comm);//gather back to 0 
+        std::cout << "Gathered\n" << std::endl;
+        if(rank ==0 )
+        {
+            sizeOfSortedArrays = sizeOfSortedArrays * 2;// double size of sorted arrays 
         }
-
-        // swap arr and tempVector
-        arr.swap(tempVector);
-
-        // update the size of sorted arrays
-        sizeOfSortedArrays *= 2;
+        MPI_Bcast(&sizeOfSortedArrays, 1, MPI_INT, 0, comm);//send size to all processes
     }
 }
 
@@ -96,4 +101,9 @@ std::vector<int> MPIMergeSortInt::sort(std::vector<int>& arr, int nproc)
 {
     mergesort(arr, nproc);
     return arr;
+}
+
+void MPIMergeSortInt::setComm(MPI_Comm &communicator)
+{
+    MPIMergeSortInt::comm = communicator;
 }

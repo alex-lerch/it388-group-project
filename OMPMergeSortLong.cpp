@@ -55,7 +55,7 @@ void OMPMergeSortLong::mergesort(std::vector<long>& arr, int nproc)
     // while we still have logical arrays to sort
     //while (sizeOfSortedArrays < arr.size()) {
     #pragma parallel omp for firstprivate(rightArrayEnd, rightArrayIndex, leftArrayEnd, leftArrayIndex) lastprivate(rightArrayEnd, rightArrayIndex, leftArrayEnd, leftArrayIndex) if(arr.size()>1000)
-    for( int i = 0; i < arr.size() / sizeOfSortedArrays; i++){    
+    for( int i = 0; i < arr.size(); i++){    
         // set left index to 0
         leftArrayIndex = 0;
 

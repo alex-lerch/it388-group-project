@@ -1,0 +1,18 @@
+
+merge_sort:2104318 terminated with signal 6 at PC=7f0ca73f79fc SP=7ffec9a326d0.  Backtrace:
+/lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7f0ca73f79fc]
+/lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7f0ca73a3476]
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7f0ca73897f3]
+/lib/x86_64-linux-gnu/libc.so.6(+0x89676)[0x7f0ca73ea676]
+/lib/x86_64-linux-gnu/libc.so.6(+0xa0cfc)[0x7f0ca7401cfc]
+/lib/x86_64-linux-gnu/libc.so.6(+0xa40ec)[0x7f0ca74050ec]
+/lib/x86_64-linux-gnu/libc.so.6(malloc+0x99)[0x7f0ca7406139]
+/lib/x86_64-linux-gnu/libstdc++.so.6(_Znwm+0x1c)[0x7f0ca76a298c]
+/lib/x86_64-linux-gnu/libstdc++.so.6(_ZNSt13basic_filebufIcSt11char_traitsIcEE27_M_allocate_internal_bufferEv+0x34)[0x7f0ca7709024]
+/lib/x86_64-linux-gnu/libstdc++.so.6(_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode+0x56)[0x7f0ca770d016]
+/lib/x86_64-linux-gnu/libstdc++.so.6(_ZNSt14basic_ofstreamIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode+0x14)[0x7f0ca770d214]
+./merge_sort(+0x7f03)[0x563ebc78bf03]
+./merge_sort(+0x4321)[0x563ebc788321]
+/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7f0ca738ad90]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7f0ca738ae40]
+./merge_sort(+0x3905)[0x563ebc787905]

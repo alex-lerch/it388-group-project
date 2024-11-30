@@ -1,7 +1,0 @@
-
-merge_sort:2803798 terminated with signal 11 at PC=7f5f2da8f7fd SP=7ffd80b08f18.  Backtrace:
-/lib/x86_64-linux-gnu/libc.so.6(+0x19d7fd)[0x7f5f2da8f7fd]
-./merge_sort(+0x3e12)[0x55eea76dce12]
-/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7f5f2d91bd90]
-/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7f5f2d91be40]
-./merge_sort(+0x38e5)[0x55eea76dc8e5]

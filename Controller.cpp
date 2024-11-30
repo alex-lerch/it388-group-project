@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     MPI_Bcast(&dataType, dataTypeLength, MPI_CHAR,0,comm);
             sortType[sortTypeLength]='\0';
         dataType[dataTypeLength]='\0';
-    printf("Sort type is %s %s in rank %d\n", sortType, dataType, rank);
+    //printf("Sort type is %s %s in rank %d\n", sortType, dataType, rank);
 
 
     string sort(sortType);
@@ -73,14 +73,14 @@ int main(int argc, char* argv[])
     if(sort.compare("MPI")==0)
     {
         cout << "Sorting using MPI" << endl;
-        cout << "Rank " << rank <<"is here"<<endl;
+        // cout << "Rank " << rank <<"is here"<<endl;
         if(data.compare("int")==0)
         {
             //create objects
             MPIMergeSortInt sorter;
             sorter.setComm(comm);
 
-            printf("rank: %d, nThread: %d\n", rank, nThreads);
+            //printf("rank: %d, nThread: %d\n", rank, nThreads);
 
             FileReader reader;
             FileWriter writer;
@@ -103,10 +103,9 @@ int main(int argc, char* argv[])
             {
                 cout << "Sorting took " << elapsed * 1000<< " milliseconds" <<endl;
                 //write to file
-                writer.writeFileInt(arr, (char*)"output.txt");
-                //deconstuct objects
+                writer.writeFileInt(arr, (char*)"output.txt");    
             }
-
+            //deconstuct objects
             sorter.~MPIMergeSortInt();
             reader.~FileReader();
             writer.~FileWriter();

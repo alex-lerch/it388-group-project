@@ -1,0 +1,2 @@
+mpi_merg_sort: MPIcontroller.cpp FileReader.cpp FileWriter.cpp MergeSortInt.cpp MergeSortString.cpp MergeSortLong.cpp MPIMergeSortInt.cpp MPIMergeSortLong.cpp
+	mpicxx -o  mpi_merge_sort MPIcontroller.cpp FileReader.cpp FileWriter.cpp MergeSortInt.cpp MergeSortString.cpp MergeSortLong.cpp MPIMergeSortInt.cpp MPIMergeSortLong.cpp -fopenmp

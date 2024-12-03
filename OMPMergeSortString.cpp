@@ -51,11 +51,13 @@ void OMPMergeSortString::mergesort(std::vector<std::string>& arr, int nproc)
     int leftArrayIndex; // the start index for the left logical array to be sorted
     int rightArrayIndex; // start index for the right logical array to be sorted
     int rightArrayEnd; // end index for the right logical array to be sorted
+    omp_set_num_threads(nproc);
 
     // the size of the logical arrays to sort
     sizeOfSortedArrays = 1;
 
     // while we still have logical arrays to sort
+    printf("got to pragma\n");
     #pragma parallel omp for firstprivate(rightArrayEnd, rightArrayIndex, leftArrayEnd, leftArrayIndex) lastprivate(rightArrayEnd, rightArrayIndex, leftArrayEnd, leftArrayIndex) if(arr.size()>1000)
     for( int i = 0; i < arr.size(); i++){    
         // set left index to 0
@@ -81,14 +83,16 @@ void OMPMergeSortString::mergesort(std::vector<std::string>& arr, int nproc)
             // move start index for the left array to the next unsorted logical array
             leftArrayIndex += 2 * sizeOfSortedArrays;
         }
+        printf("group 1\n");
 
         // copy what's left over
         for (int i = leftArrayIndex; i < arr.size(); i++) {
             tempVector[i] = arr[i];
         }
-
+        printf("group 2\n");
         // swap arr and tempVector
         arr.swap(tempVector);
+        printf("swapped arrays\n");
 
         // update the size of sorted arrays
         sizeOfSortedArrays *= 2;

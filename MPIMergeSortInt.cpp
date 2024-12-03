@@ -46,7 +46,6 @@ void MPIMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
 {
     // variables used
     int sizeOfSortedArrays; // the size of the logical arrays that are already sorted
-    
     int leftArrayIndex; // the start index for the left logical array to be sorted
     int rightArrayIndex; // start index for the right logical array to be sorted
     int rightArrayEnd; // end index for the right logical array to be sorted
@@ -63,19 +62,25 @@ void MPIMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
     // the size of the logical arrays to sort
     if(rank ==0)
     {
-        sizeOfSortedArrays = 1;
+        sizeOfSortedArrays = 1;//initial size of logical arrays
         n = arr.size();//size of array
     }
  
     MPI_Bcast(&sizeOfSortedArrays, 1, MPI_INT, 0, comm);//send size to all processes
     MPI_Bcast(&n, 1, MPI_INT, 0, comm);//send n to all processes
     int work = n/nThreads;//work for each thread to do 
-    std::cout << "Work for rank: " << rank << " is " << work <<std::endl;
-    std::cout << "SortedSize for rank: " << rank << " is " << sizeOfSortedArrays <<std::endl;
-    std::cout << "N for rank: " << rank << " is " << n <<std::endl;
+    // std::cout << "Work for rank: " << rank << " is " << work <<std::endl;
+    // std::cout << "SortedSize for rank: " << rank << " is " << sizeOfSortedArrays <<std::endl;
+    // std::cout << "N for rank: " << rank << " is " << n <<std::endl;
 
-    std::vector<int> local(work); 
+    std::vector<int> local(work);//local vector for each rank 
     MPI_Scatter(arr.data(),work, MPI_INT, local.data(), work, MPI_INT,0, comm);//Scatter equal work to processes
+
+    printf("local of rank %d after scatter\n",rank);
+    for(int i =0; i < local.size(); i++)
+    {
+        printf("%d: %d\n",i, local[i]);
+    }
 
     while(sizeOfSortedArrays < work)
     {
@@ -93,25 +98,25 @@ void MPIMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
     }
     MPI_Gather(local.data(),work,MPI_INT,arr.data(),work, MPI_INT,0,comm);//gather back to 0 
 
-    if(rank ==0)// merges the work each thread did
-    {
-        int merge_work = sizeOfSortedArrays*2;
-        for(int i =0; i < arr.size(); i += merge_work)// merges the work each thread did
-        {
-            leftArrayIndex = i;
-            rightArrayIndex = leftArrayIndex+sizeOfSortedArrays;
-            rightArrayEnd = rightArrayIndex+sizeOfSortedArrays-1;
-            std::vector<int> tempVector(n); // temporary vector used to help sort the logical arrays
-            merge(arr, tempVector,leftArrayIndex,rightArrayIndex, rightArrayEnd);//merges logical arrays
-        }
-    }
-    if(rank==0)
-    {
-        for(int i =0; i < n; i++)
-        {
-            printf("%d: %d\n",i, arr[i]);
-        }
-    }
+    // if(rank ==0)// merges the work each thread did
+    // {
+    //     int merge_work = sizeOfSortedArrays*2;
+    //     for(int i =0; i < arr.size(); i += merge_work)// merges the work each thread did
+    //     {
+    //         leftArrayIndex = i;
+    //         rightArrayIndex = leftArrayIndex+sizeOfSortedArrays;
+    //         rightArrayEnd = rightArrayIndex+sizeOfSortedArrays-1;
+    //         std::vector<int> tempVector(n); // temporary vector used to help sort the logical arrays
+    //         merge(arr, tempVector,leftArrayIndex,rightArrayIndex, rightArrayEnd);//merges logical arrays
+    //     }
+    // }
+    // if(rank==0)
+    // {
+    //     for(int i =0; i < n; i++)
+    //     {
+    //         printf("%d: %d\n",i, arr[i]);
+    //     }
+    // }
     MPI_Barrier(comm);
     std::cout << "Finished Sorting" << std::endl; 
 }

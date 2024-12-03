@@ -1,0 +1,2 @@
+omp_merge_sort: OMPcontroller.cpp FileReader.cpp FileWriter.cpp MergeSortInt.cpp MergeSortString.cpp MergeSortLong.cpp OMPMergeSortInt.cpp OMPMergeSortLong.cpp OMPMergeSortString.cpp
+	g++ -o omp_merge_sort OMPcontroller.cpp FileReader.cpp FileWriter.cpp MergeSortInt.cpp MergeSortString.cpp MergeSortLong.cpp OMPMergeSortInt.cpp OMPMergeSortLong.cpp OMPMergeSortString.cpp -fopenmp

@@ -132,72 +132,81 @@ int main(int argc, char* argv[])
             cout << "Sorting took " << elapsed * 1000<< " milliseconds" <<endl;
         }
     }
-    else if(sort.compare("OMP")==0 && rank==0)
+    else if(sort.compare("OMP")==0)
     {
-        cout << "Sorting using OMP" << endl;
-        if(data.compare("int")==0)
+        if(rank == 0)
         {
-            //create objects
-            OMPMergeSortInt sorter;
-            FileReader reader;
-            FileWriter writer;
-            std::vector<int> arr;
-            
-            reader.readFileInt(arr, (char*)file);
-            cout << "current size is :  " << arr.size() << endl;
-            //call sort
-            start = omp_get_wtime();
-            sorter.sort(arr,nThreads);
-            cout << "current size after sort :  " << arr.size() << endl;
-            elapsed = omp_get_wtime() - start;
-            //write to file
-            writer.writeFileInt(arr, (char*)"output.txt");
-            cout << "Sorting using OMP took " << elapsed * 1000<< " milliseconds" <<endl;
-            //deconstuct objects
-            sorter.~OMPMergeSortInt();
-            reader.~FileReader();
-            writer.~FileWriter();
-        }
-        if(data.compare("long")==0)
-        {
-            //create objects
-            OMPMergeSortLong sorter;
-            FileReader reader;
-            FileWriter writer;
-            std::vector<long> arr;
-            reader.readFileLong(arr, (char*)file);
-            //call sort
-            start = omp_get_wtime();
-            sorter.sort(arr,nThreads);
-            elapsed = omp_get_wtime() - start;
-            //write to file
-            writer.writeFileLong(arr, (char*)"output.txt");
-            //deconstuct objects
-            sorter.~OMPMergeSortLong();
-            reader.~FileReader();
-            writer.~FileWriter();
-            cout << "Sorting took " << elapsed * 1000 << " milliseconds" <<endl;
-        }
-        if(data.compare("string")==0)
-        {
-            //create objects
-            OMPMergeSortString sorter;
-            FileReader reader;
-            FileWriter writer;
-            std::vector<std::string> arr;
-            reader.readFileString(arr, (char*)file);
-            //call sort
-            start = omp_get_wtime();
-            sorter.sort(arr,nThreads);
-            elapsed = omp_get_wtime() - start;
-            //write to file
-            writer.writeFileString(arr, (char*)"output.txt");
-            //deconstuct objects
-            sorter.~OMPMergeSortString();
-            reader.~FileReader();
-            writer.~FileWriter();
-            cout << "Sorting took " << elapsed * 1000 << " milliseconds" <<endl;
-        }
+            cout << "Sorting using OMP" << endl;
+            if(data.compare("int")==0)
+            {
+                //create objects
+                OMPMergeSortInt sorter;
+                FileReader reader;
+                FileWriter writer;
+                std::vector<int> arr;
+                
+                reader.readFileInt(arr, (char*)file);
+                //call sort
+                cout << "read file" << endl;
+                start = omp_get_wtime();
+                cout << "got start time" << endl;
+                sorter.sort(arr,nThreads);
+
+                elapsed = omp_get_wtime() - start;
+                //write to file
+                writer.writeFileInt(arr, (char*)"output.txt");
+                cout << "Sorting using OMP took " << elapsed * 1000<< " milliseconds" <<endl;
+                //deconstuct objects
+                sorter.~OMPMergeSortInt();
+                reader.~FileReader();
+                writer.~FileWriter();
+            }
+            if(data.compare("long")==0)
+            {
+                //create objects
+                OMPMergeSortLong sorter;
+                FileReader reader;
+                FileWriter writer;
+                std::vector<long> arr;
+                reader.readFileLong(arr, (char*)file);
+                //call sort
+                start = omp_get_wtime();
+                sorter.sort(arr,nThreads);
+                elapsed = omp_get_wtime() - start;
+                //write to file
+                writer.writeFileLong(arr, (char*)"output.txt");
+                cout << "Sorting took " << elapsed * 1000 << " milliseconds" <<endl;
+                //deconstuct objects
+                sorter.~OMPMergeSortLong();
+                reader.~FileReader();
+                writer.~FileWriter();
+                
+            }
+            if(data.compare("string")==0)
+            {
+                //create objects
+                OMPMergeSortString sorter;
+                FileReader reader;
+                FileWriter writer;
+                std::vector<std::string> arr;
+                cout << "read file" << endl;
+                reader.readFileString(arr, (char*)file);
+                //call sort
+                start = omp_get_wtime();
+                cout << "got start time" << endl;
+                sorter.sort(arr,nThreads);
+                elapsed = omp_get_wtime() - start;
+                //write to file
+                writer.writeFileString(arr, (char*)"output.txt");
+                cout << "Sorting took " << elapsed * 1000 << " milliseconds" <<endl;
+                //deconstuct objects
+                sorter.~OMPMergeSortString();
+                reader.~FileReader();
+                writer.~FileWriter();
+
+            }
+        
+        MPI_Barrier(comm);
     }
     else
         if(rank ==0)

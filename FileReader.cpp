@@ -15,11 +15,9 @@ void FileReader::readFileInt(std::vector<int>& arr, char* fileName)
     infile.open(fileName);
 
     // read the file
-    //int temp = infile.peek();
     while (infile >> currentNum) {
         // process the number
         arr.push_back(currentNum);
-        //temp = infile.peek();
     }
 
     // close the file

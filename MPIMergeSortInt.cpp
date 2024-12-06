@@ -1,45 +1,56 @@
 #include "MergeSortInt.h"
 #include "MPIMergeSortInt.h"
 #include <vector>
-#include <iterator>
 #include <iostream>
 
 void MPIMergeSortInt::merge(std::vector<int>& arr, std::vector<int>& tempVector, int leftArrayIndex, int rightArrayIndex, int rightArrayEnd) {
-    // variables used
     int leftArrayEnd = rightArrayIndex - 1; // end index of the left array
-    int tempPosition = leftArrayIndex; // a temporary index used similarly to an iterator
     int numElements = rightArrayEnd - leftArrayIndex + 1; // the number of elements to be sorted
+    int rank;
+    MPI_Comm_rank(comm, &rank);
+    if(numElements ==1)//handles case where there is only 1 element to be sorted
+    {
+        return;
+    }
 
-    // while both logical arrays have items left to merge
-    while (leftArrayIndex <= leftArrayEnd && rightArrayIndex <= rightArrayEnd) {
-        
-        // if left is less than or equal to right
-        if (arr[leftArrayIndex] <= arr[rightArrayIndex]) {
-            
-            // add left item and increment
-            tempVector[tempPosition++] = arr[leftArrayIndex++];
+    int r= rightArrayIndex;//right iterator
+    int l=leftArrayIndex;//left iterator
+    int i=0;//index for tempVector
+    while(r <= rightArrayEnd && l <= leftArrayEnd && i < numElements)//merges the two logical arrays
+    {
+        if(arr[l] <= arr[r])
+        {
+            tempVector[i]=arr[l];
+            l++;
+            i++;
         }
-        else { // right is less than left
-
-            // add right item and increment
-            tempVector[tempPosition++] = arr[rightArrayIndex++];
+        else
+        {
+            tempVector[i]=arr[r];
+            r++;
+            i++;
         }
     }
 
-    // while there are left over items in the left logical array
-    while (leftArrayIndex <= leftArrayEnd) {
-
-        // add item and increment
-        tempVector[tempPosition++] = arr[leftArrayIndex++];
+    while(l <= leftArrayEnd)//copy left over left data if any
+    {
+        tempVector[i] = arr[l];
+        i++;
+        l++;
     }
 
-    // while there are left over items in the righ logical array
-    while (rightArrayIndex <= rightArrayEnd) {
-
-        // add item and increment
-        tempVector[tempPosition++] = arr[rightArrayIndex++];
+    while(r <= rightArrayEnd)//copy left over right data if any
+    {
+        tempVector[i] = arr[r];
+        i++;
+        r++;
     }
 
+    //Copy values back to origional array. 
+    for(int j = leftArrayIndex; j <= rightArrayEnd; j++)
+    {
+        arr[j] = tempVector[j-leftArrayIndex];
+    }
 }
 
 void MPIMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
@@ -56,6 +67,7 @@ void MPIMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
     int nThreads;
     int rank;
     int n;//size of array
+    int work;
     MPI_Comm_size(comm, &nThreads);
     MPI_Comm_rank(comm, &rank);
 
@@ -64,25 +76,18 @@ void MPIMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
     {
         sizeOfSortedArrays = 1;//initial size of logical arrays
         n = arr.size();//size of array
+        work = n/nThreads;//work for each thread to do 
+        
     }
  
     MPI_Bcast(&sizeOfSortedArrays, 1, MPI_INT, 0, comm);//send size to all processes
     MPI_Bcast(&n, 1, MPI_INT, 0, comm);//send n to all processes
-    int work = n/nThreads;//work for each thread to do 
-    // std::cout << "Work for rank: " << rank << " is " << work <<std::endl;
-    // std::cout << "SortedSize for rank: " << rank << " is " << sizeOfSortedArrays <<std::endl;
-    // std::cout << "N for rank: " << rank << " is " << n <<std::endl;
+    MPI_Bcast(&work, 1, MPI_INT, 0, comm);
 
     std::vector<int> local(work);//local vector for each rank 
     MPI_Scatter(arr.data(),work, MPI_INT, local.data(), work, MPI_INT,0, comm);//Scatter equal work to processes
 
-    printf("local of rank %d after scatter\n",rank);
-    for(int i =0; i < local.size(); i++)
-    {
-        printf("%d: %d\n",i, local[i]);
-    }
-
-    while(sizeOfSortedArrays < work)
+    while(sizeOfSortedArrays <= work)
     {
         int merge_work = sizeOfSortedArrays*2;
         
@@ -91,34 +96,51 @@ void MPIMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
             leftArrayIndex = i;
             rightArrayIndex = leftArrayIndex+sizeOfSortedArrays;
             rightArrayEnd = rightArrayIndex+sizeOfSortedArrays-1;
+            int numElements = rightArrayEnd - leftArrayIndex + 1;
+            //if statements handle case with odd amount of elements
+            if(rightArrayIndex >= work)
+            {
+                rightArrayIndex = work-1;//Sets to end of array
+            }
+            if(rightArrayEnd >= work-1)
+            {
+                rightArrayEnd = work-1;//Sets to end of array
+            }
+            if(numElements < merge_work)
+            {
+                rightArrayEnd = work-1;
+            }
             std::vector<int> tempVector(work); // temporary vector used to help sort the logical arrays
             merge(local, tempVector,leftArrayIndex,rightArrayIndex, rightArrayEnd);//merges logical arrays
         }
         sizeOfSortedArrays *= 2;// double size of sorted arrays 
     }
+
     MPI_Gather(local.data(),work,MPI_INT,arr.data(),work, MPI_INT,0,comm);//gather back to 0 
 
-    // if(rank ==0)// merges the work each thread did
-    // {
-    //     int merge_work = sizeOfSortedArrays*2;
-    //     for(int i =0; i < arr.size(); i += merge_work)// merges the work each thread did
-    //     {
-    //         leftArrayIndex = i;
-    //         rightArrayIndex = leftArrayIndex+sizeOfSortedArrays;
-    //         rightArrayEnd = rightArrayIndex+sizeOfSortedArrays-1;
-    //         std::vector<int> tempVector(n); // temporary vector used to help sort the logical arrays
-    //         merge(arr, tempVector,leftArrayIndex,rightArrayIndex, rightArrayEnd);//merges logical arrays
-    //     }
-    // }
-    // if(rank==0)
-    // {
-    //     for(int i =0; i < n; i++)
-    //     {
-    //         printf("%d: %d\n",i, arr[i]);
-    //     }
-    // }
+    if(rank ==0)// merges the work each thread did
+    {
+        sizeOfSortedArrays = work;//Each threads section is sorted
+        while (sizeOfSortedArrays <= n)
+        {
+            int merge_work = sizeOfSortedArrays*2;
+            for(int i =0; i < n; i += merge_work)// merges the work each thread did
+            {
+                leftArrayIndex = i;
+                rightArrayIndex = leftArrayIndex+sizeOfSortedArrays;
+                rightArrayEnd = rightArrayIndex+sizeOfSortedArrays-1;
+                int numElements = rightArrayEnd - leftArrayIndex + 1;
+                if(rightArrayEnd >= n)
+                {
+                    rightArrayEnd = n-1;
+                }
+                std::vector<int> tempVector(n); // temporary vector used to help sort the logical arrays
+                merge(arr, tempVector,leftArrayIndex,rightArrayIndex, rightArrayEnd);//merges logical arrays
+            }
+            sizeOfSortedArrays = sizeOfSortedArrays *2;
+        }
+    }
     MPI_Barrier(comm);
-    std::cout << "Finished Sorting" << std::endl; 
 }
 
 std::vector<int> MPIMergeSortInt::sort(std::vector<int>& arr, int nproc)

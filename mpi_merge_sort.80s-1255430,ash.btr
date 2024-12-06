@@ -1,0 +1,8 @@
+
+mpi_merge_sort:1255430 terminated with signal 11 at PC=555e1a44231a SP=7ffdd1f5fc30.  Backtrace:
+./mpi_merge_sort(+0x831a)[0x555e1a44231a]
+./mpi_merge_sort(+0x87a7)[0x555e1a4427a7]
+./mpi_merge_sort(+0x3f55)[0x555e1a43df55]
+/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7ff23f9f4d90]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7ff23f9f4e40]
+./mpi_merge_sort(+0x38a5)[0x555e1a43d8a5]

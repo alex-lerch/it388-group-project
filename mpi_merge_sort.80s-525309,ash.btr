@@ -1,0 +1,10 @@
+
+mpi_merge_sort:525309 terminated with signal 11 at PC=7f4a98a0a180 SP=7ffc2b7c5d00.  Backtrace:
+/lib/x86_64-linux-gnu/libfabric.so.1(+0x19180)[0x7f4a98a0a180]
+/lib/x86_64-linux-gnu/libfabric.so.1(+0x188a0)[0x7f4a98a098a0]
+/lib64/ld-linux-x86-64.so.2(+0x624e)[0x7f4a9b63a24e]
+/lib/x86_64-linux-gnu/libc.so.6(+0x45495)[0x7f4a98be7495]
+/lib/x86_64-linux-gnu/libc.so.6(on_exit+0x0)[0x7f4a98be7610]
+/lib/x86_64-linux-gnu/libc.so.6(+0x29d97)[0x7f4a98bcbd97]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7f4a98bcbe40]
+./mpi_merge_sort(+0x3885)[0x55a88bbc0885]

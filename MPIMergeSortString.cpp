@@ -19,7 +19,7 @@ void MPIMergeSortString::merge(std::vector<std::string>& arr, std::vector<std::s
     int i=0;//index for tempVector
     while(r <= rightArrayEnd && l <= leftArrayEnd && i < numElements)//merges the two logical arrays
     {
-        if(arr[l].compare(arr[r]) <= 0)
+        if(arr[l] <= arr[r])
         {
             tempVector[i]=arr[l];
             l++;
@@ -96,58 +96,62 @@ void MPIMergeSortString::mergesort(std::vector<std::string>& arr, int nproc)
     MPI_Bcast(&total_size, 1, MPI_INT, 0, comm);
 
 
+    std::vector<char*> temp(work);
     std::vector<std::string> local(work);//local vector for each rank 
-    MPI_Scatter(arr.data(),total_size+work, MPI_CHAR, local.data(), total_size+work, MPI_CHAR,0, comm);//Scatter equal work to processes
+    //MPI_Scatter(arr.data(),total_size+work, MPI_CHAR, local.data(), total_size+work, MPI_CHAR,0, comm);//Scatter equal work to processes
 
-    printf("Got Past Scatter\n");
-    printf("index 0 is %c\n", local[0]);
-    // int sizes[n];
-    // if(rank ==0)
-    // {
-    //     for(int i =0; i < n; i++)
-    //     {
-    //         sizes[i] = strlen(arr[i].c_str());
-    //     }
+    // printf("Got Past Scatter\n");
+    // printf("index 0 is %c\n", local[0]);
+    int sizes[n];
+    if(rank ==0)
+    {
+        for(int i =0; i < n; i++)//Get the size of every string
+        {
+            sizes[i] = strlen(arr[i].c_str());
+        }
         
-    // }
+    }
 
-    // MPI_Bcast(sizes, n,MPI_INT, 0,comm);
+    MPI_Bcast(sizes, n,MPI_INT, 0,comm);
 
-    // if(rank ==0)
-    // {
-    //     for(int i=0; i < nThreads; i++)
-    //     {
-    //         for(int j=0; j < work; j++)
-    //         {
-    //             if(i==0)
-    //             {
-    //                 local[j] = arr[j]; 
-    //             }
-    //             else
-    //             {
-    //                 MPI_Send(arr[j*i].c_str(),sizes[j*i],MPI_CHAR,i,i,comm);
-    //             }
-    //         }
-    //     }
-    // }
-    // else
-    // {
-    //     for(int i=0; i<work; i++)
-    //     {
-    //         char temp[sizes[i*rank]];
-    //         local[i] = temp;
-    //         MPI_Recv(&local[i].c_str(),sizes[i*rank],MPI_CHAR, 0, rank, comm, MPI_STATUS_IGNORE);
-    //     }
-    // }
-
-
-
-
-
-
-
+    if(rank ==0)
+    {
+        for(int i=0; i < nThreads; i++)//For each rank i represents the rank
+        {
+            for(int j=0; j < work; j++)
+            {
+                if(i==0)
+                {
+                    temp[j][sizes[j]];//allocate memory
+                    temp[j] = (char*)arr[j].c_str();//move string
+                }
+                else
+                {
+                    char* buffer = (char*)arr[i*work+j].c_str();
+                    MPI_Send(buffer,sizes[i*work+j],MPI_CHAR,i,i,comm);//send string
+                    //printf("Rank: 0 Sent\n");
+                }
+            }
+            //printf("Finished Sending\n");
+        }
+    }
+    else
+    {
+        for(int i=0; i<work; i++)
+        {
+            temp[i] = new char[sizes[work*rank + i]];//set memory for location
+            MPI_Recv(temp[i],sizes[work*rank +i],MPI_CHAR, 0, rank, comm, MPI_STATUS_IGNORE);//Recieve
+            //printf("Rank: %d Recieved\n", rank);
+        }
+        //printf("Rank: %d finished recieving\n", rank);
+    }
 
 
+    for(int i=0; i < work; i++)
+    {
+        local[i] = string(temp[i]);//convert back to strings
+    }
+    printf("Rank: %d converted back to strings\n", rank);
 
 
 
@@ -155,6 +159,11 @@ void MPIMergeSortString::mergesort(std::vector<std::string>& arr, int nproc)
 
 
 
+
+
+
+
+    //Sort for each rank
     while(sizeOfSortedArrays <= work)
     {
         int merge_work = sizeOfSortedArrays*2;
@@ -183,9 +192,79 @@ void MPIMergeSortString::mergesort(std::vector<std::string>& arr, int nproc)
         }
         sizeOfSortedArrays *= 2;// double size of sorted arrays 
     }
+    printf("Rank: %d Got past first sort\n", rank);
 
-    MPI_Gather(local.data(),work,MPI_CHAR,arr.data(),work, MPI_CHAR,0,comm);//gather back to 0 
 
+    if(rank == 1)
+    {
+        for(int i=0; i < work; i++)
+            printf("%d: %s\n",i, local[i].c_str());
+    }
+
+
+
+
+    // Gather Section Starts Here
+    int local_sizes[work];//array with the local sizes of each string
+    temp.clear();
+    for(int i=0; i < work; i++)//gets the new local sizes of strings and converts back to char* for mpi
+    {
+        if(rank != 0)
+        {
+            temp[i] = (char*)local[i].c_str();
+            local_sizes[i] = (int)strlen(local[i].c_str());
+        }
+        else//rank 0 does not convert because there is no need to send
+        {
+            local_sizes[i] = (int)strlen(local[i].c_str());
+        }
+    }
+
+    int new_sizes[n];//new list of all sizes
+    printf("Rank: %d converted char* to string\n", rank);
+    MPI_Allgather(local_sizes, work, MPI_INT, new_sizes, work, MPI_INT, comm);//gathers all string sizes to all arrays
+    printf("gathered succesfully\n");
+
+
+   if(rank ==0)
+   {
+        for(int i=0; i < rank; i++)//i represent rank
+        {
+            for(int j=0; j < work; j++)//j is index value
+            {
+                if(i==0)//if rank 0 just copy to arr
+                {
+                    arr[j] = string(local[j]);
+                }
+                else//otherwise recieve from other thread
+                {
+                    char buff[new_sizes[i*work+j]];//set memory for buffer
+                    MPI_Recv(buff, new_sizes[i*work+j], MPI_CHAR, i,i, comm,MPI_STATUS_IGNORE);//Recieve string
+                    arr[i*work+j] = string(buff);
+                }
+            }
+        }
+        printf("Rank 0 finished recieving\n");
+   }
+   else
+   {
+        for(int i =0; i < work; i++)//Sends each string to rank 0
+        {
+            MPI_Send(temp[i],new_sizes[i*rank], MPI_CHAR, 0,rank,comm);
+        }
+        printf("Rank: %d finished sending", rank);
+   }
+    //Gather Section ends here. 
+
+    // if(rank==0)
+    // {
+    //     for(int i =0; i < n; i++)
+    //     {
+    //         printf("%d: %s\n", i, arr[i].c_str());
+    //     }
+    // }
+
+    //Second sort that merges each threads work
     if(rank ==0)// merges the work each thread did
     {
         sizeOfSortedArrays = work;//Each threads section is sorted

@@ -1,7 +1,7 @@
 #include <vector>
 #include "MergeSortString.h"
 #include <mpi.h>
-class MPIMergeSortString:  MergeSortString
+class MPIMergeSortString
 {
     
     public:

@@ -1,6 +1,7 @@
 #include "MergeSortLong.h"
 #include "OMPMergeSortLong.h"
 #include <vector>
+#include <omp.h>
 
 void OMPMergeSortLong::merge(std::vector<long>& arr, std::vector<long>& tempVector, int leftArrayIndex, int rightArrayIndex, int rightArrayEnd) {
     // variables used
@@ -48,36 +49,40 @@ void OMPMergeSortLong::mergesort(std::vector<long>& arr, int nproc)
     int leftArrayIndex; // the start index for the left logical array to be sorted
     int rightArrayIndex; // start index for the right logical array to be sorted
     int rightArrayEnd; // end index for the right logical array to be sorted
+    omp_set_num_threads(nproc);
+
 
     // the size of the logical arrays to sort
     sizeOfSortedArrays = 1;
 
     // while we still have logical arrays to sort
-    //while (sizeOfSortedArrays < arr.size()) {
-    #pragma parallel omp for firstprivate(rightArrayEnd, rightArrayIndex, leftArrayEnd, leftArrayIndex) lastprivate(rightArrayEnd, rightArrayIndex, leftArrayEnd, leftArrayIndex) if(arr.size()>1000)
-    for( int i = 0; i < arr.size(); i++){    
+    while (sizeOfSortedArrays < arr.size()) {
+
         // set left index to 0
         leftArrayIndex = 0;
 
         // check for real group
-        while ( leftArrayIndex < (arr.size() - sizeOfSortedArrays) ) {
-            
-            // calculate the start index for the right array
-            rightArrayIndex = leftArrayIndex + sizeOfSortedArrays;
+        #pragma parallel omp for firstprivate(rightArrayEnd, rightArrayIndex, leftArrayEnd, leftArrayIndex) lastprivate(rightArrayEnd, rightArrayIndex, leftArrayEnd, leftArrayIndex) if(arr.size()>1000)
+        for( int i = 0; i < arr.size(); i++){    
+            if(leftArrayIndex < (arr.size() - sizeOfSortedArrays))
+            {
+                // calculate the start index for the right array
+                rightArrayIndex = leftArrayIndex + sizeOfSortedArrays;
 
-            // calculate rightArrayEnd
-            if ( arr.size() - 1 < (rightArrayIndex + (sizeOfSortedArrays - 1)) ) {
-                rightArrayEnd = arr.size() - 1;
+                // calculate rightArrayEnd
+                if ( arr.size() - 1 < (rightArrayIndex + (sizeOfSortedArrays - 1)) ) {
+                    rightArrayEnd = arr.size() - 1;
+                }
+                else {
+                    rightArrayEnd = rightArrayIndex + (sizeOfSortedArrays - 1);
+                }
+
+                // merge the two logical arrays
+                merge(arr, tempVector, leftArrayIndex, rightArrayIndex, rightArrayEnd);
+
+                // move start index for the left array to the next unsorted logical array
+                leftArrayIndex += 2 * sizeOfSortedArrays;
             }
-            else {
-                rightArrayEnd = rightArrayIndex + (sizeOfSortedArrays - 1);
-            }
-
-            // merge the two logical arrays
-            merge(arr, tempVector, leftArrayIndex, rightArrayIndex, rightArrayEnd);
-
-            // move start index for the left array to the next unsorted logical array
-            leftArrayIndex += 2 * sizeOfSortedArrays;
         }
 
         // copy what's left over

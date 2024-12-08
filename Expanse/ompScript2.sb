@@ -1,0 +1,27 @@
+#!/bin/bash
+#SBATCH --job-name="omp"
+#SBATCH --output="outputomp.%j.%N.txt"
+#SBATCH --partition=compute
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=24
+#SBATCH --mem=1G
+#SBATCH --account=isu102
+#SBATCH --export=ALL
+#SBATCH -t 00:30:00
+
+./omp_merge_sort 1 int d4000000.rand
+
+./omp_merge_sort 2 int d4000000.rand
+
+./omp_merge_sort 4 int d4000000.rand
+
+./omp_merge_sort 10 int d4000000.rand
+
+./omp_merge_sort 1 long l2000000.rand
+
+./omp_merge_sort 2 long l2000000.rand
+
+./omp_merge_sort 4 long l2000000.rand
+
+./omp_merge_sort 10 long l2000000.rand

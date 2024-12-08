@@ -1,0 +1,16 @@
+Sorting using ints with 1 threads
+Sorting using OMP took 1664.19 milliseconds
+Sorting using ints with 2 threads
+Sorting using OMP took 1602.33 milliseconds
+Sorting using ints with 4 threads
+Sorting using OMP took 1619.46 milliseconds
+Sorting using ints with 10 threads
+Sorting using OMP took 1613.27 milliseconds
+Sorting using longs with 1 threads
+Sorting took 810.482 milliseconds
+Sorting using longs with 2 threads
+Sorting took 710.678 milliseconds
+Sorting using longs with 4 threads
+Sorting took 721.81 milliseconds
+Sorting using longs with 10 threads
+Sorting took 811.651 milliseconds

@@ -1,0 +1,25 @@
+#!/bin/bash
+#SBATCH --job-name="mpi"
+#SBATCH --output="outputmpi.%j.%N.txt"
+#SBATCH --partition=compute
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=40
+#SBATCH --account=isu102
+#SBATCH --export=ALL
+#SBATCH -t 00:20:00
+                                                         
+srun -n 1 ./mpi_merge_sort int d1000.rand
+
+srun -n 2 ./mpi_merge_sort int d1000.rand
+
+srun -n 4 ./mpi_merge_sort int d1000.rand
+
+srun -n 10 ./mpi_merge_sort int d1000.rand
+
+srun -n 1 ./mpi_merge_sort long l1000.rand
+
+srun -n 2 ./mpi_merge_sort long l1000.rand
+
+srun -n 4 ./mpi_merge_sort long l1000.rand
+
+srun -n 10 ./mpi_merge_sort long l1000.rand

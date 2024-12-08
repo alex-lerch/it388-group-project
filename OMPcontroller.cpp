@@ -28,11 +28,11 @@ int main(int argc, char* argv[])
     double start, elapsed;
 
     file = (char*)argv[3];
-    printf("filename is: %s\n", (char *)file);
+    //printf("filename is: %s\n", (char *)file);
     nThreads = atoi(argv[1]);
-    printf("nThreads is: %d\n", nThreads);
+    //printf("nThreads is: %d\n", nThreads);
     string data(argv[2]);
-    printf("data type is: %s\n", data.c_str());
+    //printf("data type is: %s\n", data.c_str());
 
     cout << "Sorting using OMP" << endl;
     if(data.compare("int")==0)
@@ -45,11 +45,11 @@ int main(int argc, char* argv[])
         
         reader.readFileInt(arr, (char*)file);
         //call sort
-        cout << "read file" << endl;
+        //cout << "read file" << endl;
         start = omp_get_wtime();
-        cout << "got start time" << endl;
+        //cout << "got start time" << endl;
         sorter.sort(arr,nThreads);
-        cout << "finished sorting" << endl;
+        //cout << "finished sorting" << endl;
         elapsed = omp_get_wtime() - start;
         //write to file
         writer.writeFileInt(arr, (char*)"output.txt");
@@ -67,9 +67,13 @@ int main(int argc, char* argv[])
         FileWriter writer;
         std::vector<long> arr;
         reader.readFileLong(arr, (char*)file);
+        // cout << "read file" << endl;
+        // cout << "size of arr is " << arr.size() << endl;
+
         //call sort
         start = omp_get_wtime();
         sorter.sort(arr,nThreads);
+        //cout << "finished sorting" << endl;
         elapsed = omp_get_wtime() - start;
         //write to file
         writer.writeFileLong(arr, (char*)"output.txt");

@@ -195,11 +195,11 @@ void MPIMergeSortString::mergesort(std::vector<std::string>& arr, int nproc)
     printf("Rank: %d Got past first sort\n", rank);
 
 
-    if(rank == 1)
-    {
-        for(int i=0; i < work; i++)
-            printf("%d: %s\n",i, local[i].c_str());
-    }
+    // if(rank == 1)
+    // {
+    //     for(int i=0; i < work; i++)
+    //         printf("%d: %s\n",i, local[i].c_str());
+    // }
 
 
 
@@ -255,14 +255,6 @@ void MPIMergeSortString::mergesort(std::vector<std::string>& arr, int nproc)
         printf("Rank: %d finished sending", rank);
    }
     //Gather Section ends here. 
-
-    // if(rank==0)
-    // {
-    //     for(int i =0; i < n; i++)
-    //     {
-    //         printf("%d: %s\n", i, arr[i].c_str());
-    //     }
-    // }
 
     //Second sort that merges each threads work
     if(rank ==0)// merges the work each thread did

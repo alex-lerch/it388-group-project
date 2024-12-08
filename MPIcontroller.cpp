@@ -16,7 +16,7 @@
 
 
 //Compile: make mpi
-//Run mpiexec -n <nThread> ./mpi_merger_sort <datatype> <inputfile>
+//Run: mpiexec -n <nThread> ./mpi_merger_sort <datatype> <inputfile>
 using namespace std;
 
 
@@ -26,7 +26,6 @@ int main(int argc, char* argv[])
     int rank;
     int dataSize;
 
-    //int sortTypeLength;
     int dataTypeLength;
     const char* file;
     double start, elapsed;

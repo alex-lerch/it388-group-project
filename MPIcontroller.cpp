@@ -57,9 +57,12 @@ int main(int argc, char* argv[])
     dataType[dataTypeLength]='\0';
     string data(dataType);
 
-    cout << "Sorting using MPI\n" << endl;
+    if(rank==0)
+        cout << "Sorting using MPI\n" << endl;
     if(data.compare("int")==0)
     {
+        if(rank==0)
+            cout << "Sorting using ints with "  << nThreads << " threads" << endl;
         //create objects
         MPIMergeSortInt sorter;
         sorter.setComm(comm);
@@ -91,7 +94,8 @@ int main(int argc, char* argv[])
     }
     if(data.compare("long")==0)
     {
-        cout << "Sorting using longs" << endl;
+        if(rank==0)
+            cout << "Sorting using longs with " << nThreads << " threads" << endl;
         //create objects
         MPIMergeSortLong sorter;
         sorter.setComm(comm);

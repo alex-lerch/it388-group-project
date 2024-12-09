@@ -1,7 +1,7 @@
 The program for both mpi and omp consists of a controller file and various other files that handle datatypes.
 There is an included makefile that is split with two commands. Currently only integers and longs can be sorted.
 MPI sorting is unreliable and does not always function as intended when the problem size is greater then 1000.
-Output of the program is written to a file named output.txt. 
+Output of the program is written to a file named output.txt. For both OMP and MPI the sort function calls the mergesort function which uses the merge function to merge logical arrays. 
 
 To compile the omp portion of the program the command is:
     make omp
@@ -13,6 +13,6 @@ To compile the mpi portion of the program the command is:
 To run the mpi portion:
     mpiexec -n <#number of threads> ./mpi_merge_sort <"datatype"> <"input file">
 
-Included are multiple sample input files
+Included are multiple sample input files of .rand type
     d: integer
     l: long

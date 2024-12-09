@@ -112,7 +112,6 @@ void MPIMergeSortInt::mergesort(std::vector<int>& arr, int nproc)
             }
             std::vector<int> tempVector(work); // temporary vector used to help sort the logical arrays
             merge(local, tempVector,leftArrayIndex,rightArrayIndex, rightArrayEnd);//merges logical arrays
-            printf("Rank: %d mergerd\n", rank);
         }
         sizeOfSortedArrays *= 2;// double size of sorted arrays 
     }

@@ -50,7 +50,6 @@ void MPIMergeSortLong::merge(std::vector<long>& arr, std::vector<long>& tempVect
     {
         arr[j] = tempVector[j-leftArrayIndex];
     }
-    printf("Rank: %d merged %d elements\n",rank,numElements);
 }
 
 void MPIMergeSortLong::mergesort(std::vector<long>& arr, int nproc)

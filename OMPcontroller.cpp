@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
     cout << "Sorting using OMP" << endl;
     if(data.compare("int")==0)
     {
+        cout << "Sorting using ints with " << nThreads << " threads" << endl;
         //create objects
         OMPMergeSortInt sorter;
         FileReader reader;
@@ -56,6 +57,7 @@ int main(int argc, char* argv[])
     }
     if(data.compare("long")==0)
     {
+        cout << "Sorting using longs with " << nThreads << " threads" << endl;
         //create objects
         OMPMergeSortLong sorter;
         FileReader reader;
